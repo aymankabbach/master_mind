@@ -9,14 +9,18 @@ winner=False
 buttons_list=[]
 colors=["Yellow","Purple","Pink","Red","Blue","Green"]
 machine_color=[]
-machine_color1=[]
+player_color=[]
+player_color1=[]
+color=" "
+judgment=[]
+TRY=0
+POS=1
 def machine_chooses_colors():
+    global machine_color1
     for x in range(4):
         chosing_color=random.choice(colors)
         machine_color.append(chosing_color)
-machine_chooses_colors()
-machine_color1=[color for color in machine_color]
-color=" "
+    machine_color1=[color for color in machine_color]
 def choose_color(button):
     global color
     color=button["text"]
@@ -41,47 +45,43 @@ button_f.grid(row=0 , column =6)
 def play_color(Button):
     global color
     Button["text"]=color
-POS=1
-button_A=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_A))
-button_A.grid(row=POS,column =0)
-
-button_B=Button(window, text="", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_B))
-button_B.grid(row=POS,column =1)
-
-button_C=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_C))
-button_C.grid(row=POS,column =2)
-
-button_D=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_D))
-button_D.grid(row=POS,column =3)
-
-button_E=Button(window, text="PLAY", height=3, width=6, bg='#BEB8B7', fg="black", command=lambda: confirm_colors())
-button_E.grid(row=POS,column=6)
-
-button_F=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black")
-button_F.grid(row=POS,column =5)
-
-buttons_list.append(button_A)
-buttons_list.append(button_B)
-buttons_list.append(button_C)
-buttons_list.append(button_D)
-buttons_list.append(button_E)
-buttons_list.append(button_F)
-
-player_color=[]
-player_color1=[]
+def create_palayable_buttons():
+    global buttons_list,list_of_buttons
+    list_of_buttons=[]
+    button_A=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_A))
+    button_B=Button(window, text="", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_B))
+    button_C=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_C))
+    button_D=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_D))
+    button_E=Button(window, text="PLAY", height=3, width=6, bg='#BEB8B7', fg="black", command=lambda: confirm_colors())
+    button_F=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black")
+    list_of_buttons.append(button_A)
+    list_of_buttons.append(button_B)
+    list_of_buttons.append(button_C)
+    list_of_buttons.append(button_D)
+    list_of_buttons.append(button_E)
+    list_of_buttons.append(button_F)
+    buttons_list.extend(list_of_buttons)
+    return list_of_buttons
+def grid_playable_buttons(POS):
+    list_of_buttons=create_palayable_buttons()
+    pos=0
+    for button in list_of_buttons:
+        button.grid(row=POS,column=pos)
+        pos+=1
 def confirm_colors():
-    if button_A["text"] and button_B["text"] and button_C["text"] and button_D["text"] in colors:
-        global player_color, player_color1
-        player_color=[button_A["text"],button_B["text"],button_C["text"],button_D["text"]]
-        button_A.config(state=DISABLED)
-        button_B.config(state=DISABLED)
-        button_C.config(state=DISABLED)
-        button_D.config(state=DISABLED)
+    global player_color, player_color1
+    players_buttons=list_of_buttons[0:4]
+    for button in players_buttons:
+        print(button["text"])
+    if players_buttons[0]["text"] and players_buttons[1]["text"] and players_buttons[2]["text"] and players_buttons[3]["text"] in colors:
+        player_color=[button["text"] for button in players_buttons]
+        for button in players_buttons:
+            button.config(state=DISABLED)
         player_color1=player_color
         judging()
         check_win()
-judgment=[]
 def judging():
+    global judgment
     pos=0
     POS=0
     while POS<4:
@@ -97,42 +97,18 @@ def judging():
         if player_color1[pos] in machine_color1:
             judgment.append("W")
             machine_color1.remove(player_color1[pos])
-            pos+=1
         else:
             judgment.append("N")
-            pos+=1
+        pos+=1
     random.shuffle(judgment)
-    button_F["text"]=judgment
-    button_E.config(state=DISABLED)
-TRY=0
+    buttons_list[-1]["text"]=judgment
+    buttons_list[-2].config(state=DISABLED)
 def retry():
-    global POS,TRY,judgment,player_color,machine_color1,machine_color,button_A,button_B,button_C,button_D,button_E,button_F,buttons_list
+    global POS,TRY,judgment,player_color,machine_color1,machine_color
     TRY+=1
     if winner == False:
         POS+=1
-        button_A=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_A))
-        button_A.grid(row=POS,column =0)
-
-        button_B=Button(window, text="", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_B))
-        button_B.grid(row=POS,column =1)
-
-        button_C=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_C))
-        button_C.grid(row=POS,column =2)
-
-        button_D=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_D))
-        button_D.grid(row=POS,column =3)
-
-        button_E=Button(window, text="PLAY", height=3, width=6, bg='#BEB8B7', fg="black", command=lambda: confirm_colors())
-        button_E.grid(row=POS,column=6)
-
-        button_F=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black")
-        button_F.grid(row=POS,column =5)
-        buttons_list.append(button_A)
-        buttons_list.append(button_B)
-        buttons_list.append(button_C)
-        buttons_list.append(button_D)
-        buttons_list.append(button_E)
-        buttons_list.append(button_F)
+        grid_playable_buttons(POS)
         judgment.clear()
         player_color.clear()
         machine_color1=[color for color in machine_color]
@@ -147,12 +123,15 @@ def check_win():
             messagebox.showinfo("info",f'Game over\n{showing_result}')
         else:
             retry()
-def reset():
-    global button_A,button_B,button_C,button_D,button_E,button_F,POS,color,TRY,judgment,player_color,machine_color,machine_color1,buttons_list
+def destroy_buttons():
+    global buttons_list
     pos=0
     while pos<len(buttons_list):
         buttons_list[pos].destroy()
         pos+=1
+def reset():
+    global POS,color,TRY,judgment,player_color,machine_color,machine_color1
+    destroy_buttons()
     buttons_list.clear()
     color=" "
     judgment.clear()
@@ -162,26 +141,12 @@ def reset():
     machine_color1=[color for color in machine_color]
     TRY=0
     POS=1
-    button_A=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_A))
-    button_A.grid(row=POS,column =0)
-
-    button_B=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_B))
-    button_B.grid(row=POS,column =1)
-
-    button_C=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_C))
-    button_C.grid(row=POS,column =2)
-
-    button_D=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black",command=lambda: play_color(button_D))
-    button_D.grid(row=POS,column =3)
-
-    button_E=Button(window, text="PLAY", height=3, width=6, bg='#BEB8B7', fg="black", command=lambda: confirm_colors())
-    button_E.grid(row=POS,column=6)
-
-    button_F=Button(window, text=" ", height=3, width=6, bg='#BEB8B7', fg="black")
-    button_F.grid(row=POS,column =5)
+    grid_playable_buttons(POS)
 main_menu=Menu(window)
 window.config(menu=main_menu)
 options=Menu(main_menu, tearoff=False)
 main_menu.add_cascade(label="Options", menu=options)
 options.add_command(label="play again", command=lambda: reset())
+machine_chooses_colors()
+grid_playable_buttons(POS)
 window.mainloop()
